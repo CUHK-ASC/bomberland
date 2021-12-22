@@ -1,6 +1,7 @@
-from typing import Dict, List
-import websockets
 import json
+from typing import Dict, List
+
+import websockets
 
 
 class ForwardModel:
@@ -28,7 +29,7 @@ class ForwardModel:
                 data = json.loads(raw_data)
                 await self._on_data(data)
             except websockets.exceptions.ConnectionClosed:
-                print('Connection with server closed')
+                print("Connection with server closed")
                 break
 
     async def _on_data(self, data):
@@ -44,7 +45,7 @@ class ForwardModel:
             # no-op
             return
         else:
-            print(f"unknown packet \"{data_type}\": {data}")
+            print(f'unknown packet "{data_type}": {data}')
 
     async def _on_next_state(self, payload):
         if self._next_state_callback != None:
@@ -67,8 +68,15 @@ class ForwardModel:
     next_state call since payloads can come back in any order
     It should ideally be unique
     """
-    async def send_next_state(self, sequence_id: int, game_state: Dict, actions: List[Dict]):
+
+    async def send_next_state(
+        self, sequence_id: int, game_state: Dict, actions: List[Dict]
+    ):
         game_state.pop("connection", None)
-        packet = {"actions": actions,
-                  "type": "evaluate_next_state", "state": game_state, "sequence_id": sequence_id}
+        packet = {
+            "actions": actions,
+            "type": "evaluate_next_state",
+            "state": game_state,
+            "sequence_id": sequence_id,
+        }
         await self.connection.send(json.dumps(packet))

@@ -1,8 +1,7 @@
-import asyncio
-from typing import Union
-import websockets
 import json
+from typing import Union
 
+import websockets
 from websockets.client import WebSocketClientProtocol
 
 _move_set = set(("up", "down", "left", "right"))
@@ -35,8 +34,7 @@ class GameState:
         await self._send(packet)
 
     async def send_detonate(self, x, y, unit_id: str):
-        packet = {"type": "detonate", "coordinates": [
-            x, y], "unit_id": unit_id}
+        packet = {"type": "detonate", "coordinates": [x, y], "unit_id": unit_id}
         await self._send(packet)
 
     async def _handle_messages(self, connection: WebSocketClientProtocol):
@@ -46,7 +44,7 @@ class GameState:
                 data = json.loads(raw_data)
                 await self._on_data(data)
             except websockets.exceptions.ConnectionClosed:
-                print('Connection with server closed')
+                print("Connection with server closed")
                 break
 
     async def _on_data(self, data):
@@ -66,7 +64,7 @@ class GameState:
             winning_agent_id = payload.get("winning_agent_id")
             print(f"Game over. Winner: Agent {winning_agent_id}")
         else:
-            print(f"unknown packet \"{data_type}\": {data}")
+            print(f'unknown packet "{data_type}": {data}')
 
     def _on_game_state(self, game_state):
         self._state = game_state
@@ -109,8 +107,9 @@ class GameState:
             should_remove = entity_x == x and entity_y == y
             return should_remove == False
 
-        self._state["entities"] = list(filter(
-            filter_entity_fn, self._state["entities"]))
+        self._state["entities"] = list(
+            filter(filter_entity_fn, self._state["entities"])
+        )
 
     def _on_unit_state(self, unit_state):
         unit_id = unit_state.get("unit_id")
@@ -130,8 +129,7 @@ class GameState:
         if action_type == "move":
             move = action_packet.get("move")
             if move in _move_set:
-                new_coordinates = self._get_new_unit_coordinates(
-                    coordinates, move)
+                new_coordinates = self._get_new_unit_coordinates(coordinates, move)
                 self._state["unit_state"][unit_id]["coordinates"] = new_coordinates
         elif action_type == "bomb":
             # no - op since this is redundant info
@@ -145,10 +143,10 @@ class GameState:
     def _get_new_unit_coordinates(self, coordinates, move_action) -> Union[int, int]:
         [x, y] = coordinates
         if move_action == "up":
-            return [x, y+1]
+            return [x, y + 1]
         elif move_action == "down":
-            return [x, y-1]
+            return [x, y - 1]
         elif move_action == "right":
-            return [x+1, y]
+            return [x + 1, y]
         elif move_action == "left":
-            return [x-1, y]
+            return [x - 1, y]

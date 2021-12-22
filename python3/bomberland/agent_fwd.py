@@ -1,20 +1,24 @@
-from typing import Union
-from bomberland.forward_model import ForwardModel
-from bomberland.game_state import GameState
 import asyncio
 import os
 import random
+from typing import Union
 
-fwd_model_uri = os.environ.get(
-    "FWD_MODEL_CONNECTION_STRING") or "ws://127.0.0.1:6969/?role=admin"
+from bomberland.forward_model import ForwardModel
+from bomberland.game_state import GameState
 
-uri = os.environ.get(
-    "GAME_CONNECTION_STRING") or "ws://127.0.0.1:3000/?role=agent&agentId=agentId&name=defaultName"
+fwd_model_uri = (
+    os.environ.get("FWD_MODEL_CONNECTION_STRING") or "ws://127.0.0.1:6969/?role=admin"
+)
+
+uri = (
+    os.environ.get("GAME_CONNECTION_STRING")
+    or "ws://127.0.0.1:3000/?role=agent&agentId=agentId&name=defaultName"
+)
 
 actions = ["up", "down", "left", "right", "bomb", "detonate"]
 
 
-class Agent():
+class Agent:
     def __init__(self):
         self._client_fwd = ForwardModel(fwd_model_uri)
         self._client = GameState(uri)
@@ -28,20 +32,23 @@ class Agent():
 
         client_connection = loop.run_until_complete(self._client.connect())
 
-        client_fwd_connection = loop.run_until_complete(
-            self._client_fwd.connect())
+        client_fwd_connection = loop.run_until_complete(self._client_fwd.connect())
 
         loop = asyncio.get_event_loop()
         loop.create_task(self._client._handle_messages(client_connection))
-        loop.create_task(
-            self._client_fwd._handle_messages(client_fwd_connection))
+        loop.create_task(self._client_fwd._handle_messages(client_fwd_connection))
         loop.run_forever()
 
     def _get_bomb_to_detonate(self, game_state) -> Union[int, int] or None:
         agent_number = game_state.get("connection").get("agent_number")
         entities = self._client._state.get("entities")
-        bombs = list(filter(lambda entity: entity.get(
-            "owner") == agent_number and entity.get("type") == "b", entities))
+        bombs = list(
+            filter(
+                lambda entity: entity.get("owner") == agent_number
+                and entity.get("type") == "b",
+                entities,
+            )
+        )
         bomb = next(iter(bombs or []), None)
         if bomb != None:
             return [bomb.get("x"), bomb.get("y")]
@@ -68,10 +75,11 @@ class Agent():
             {
                 "action": {"move": "right", "type": "move"},
                 "agent_number": 0,
-            }, {
+            },
+            {
                 "action": {"move": "left", "type": "move"},
                 "agent_number": 1,
-            }
+            },
         ]
         await self._client_fwd.send_next_state(1, self._client._state, actions)
 

@@ -1,5 +1,5 @@
 import unittest
-from game_state import GameState
+from bomberland.game_state import GameState
 from unittest import IsolatedAsyncioTestCase
 from jsonschema import validate
 import copy

@@ -1,6 +1,6 @@
 import asyncio
 from typing import Dict
-from gym import Gym
+from bomberland.gym import Gym
 import os
 
 fwd_model_uri = os.environ.get(

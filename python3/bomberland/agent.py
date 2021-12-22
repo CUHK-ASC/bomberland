@@ -1,5 +1,5 @@
 from typing import Union
-from game_state import GameState
+from bomberland.game_state import GameState
 import asyncio
 import random
 import os

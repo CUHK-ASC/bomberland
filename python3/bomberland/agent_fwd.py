@@ -1,6 +1,6 @@
 from typing import Union
-from forward_model import ForwardModel
-from game_state import GameState
+from bomberland.forward_model import ForwardModel
+from bomberland.game_state import GameState
 import asyncio
 import os
 import random

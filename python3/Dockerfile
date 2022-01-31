@@ -1,8 +1,9 @@
 FROM python:3.8-bullseye
 
-COPY ./bomberland/requirements.txt /app/requirements.txt
-WORKDIR /app
-RUN python -m pip install -r requirements.txt
-RUN python -m unittest
+COPY ./bomberland/requirements.txt /app/bomberland/requirements.txt
 COPY . /app/
-ENTRYPOINT PYTHONUNBUFFERED=1 python agent.py
+WORKDIR /app
+RUN python -m pip install -r bomberland/requirements.txt
+RUN python -m pip install -e .
+# RUN python -m bomberland/unittest
+ENTRYPOINT PYTHONUNBUFFERED=1 python bomberland/agent.py

@@ -105,20 +105,20 @@ def calculate_reward(state: Dict):
     return 1
 
 
-async def main():
+def main():
+    loop = asyncio.get_event_loop()
     gym = Gym(fwd_model_uri)
-    await gym.connect()
+    loop.run_until_complete( gym.connect())
     env = gym.make("bomberland-open-ai-gym", mock_6x6_state)
     for i_ in range(1000):
         actions = []
-        observation, done, info = await env.step(actions)
+        observation, done, info = env.step(actions)
         reward = calculate_reward(observation)
 
         print(f"reward: {reward}, done: {done}, info: {info}")
         if done:
-            await env.reset()
-    await gym.close()
-
+            env.reset()
+    loop.run_until_complete( gym.close())
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

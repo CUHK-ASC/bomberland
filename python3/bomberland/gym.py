@@ -3,6 +3,11 @@ from typing import Callable, Dict, List
 
 from bomberland.forward_model import ForwardModel
 
+from bomberland.forward_model import ForwardModel
+from gym import spaces
+import numpy as np
+import gym
+
 
 class GymEnv:
     def __init__(
@@ -17,13 +22,24 @@ class GymEnv:
         self._fwd = fwd_model
         self._channel = channel
         self._send = send_next_state
+        self.action_space = spaces.Discrete(4)
+        high = np.array(
+            [
+                1,
+                2,
+                3,
+                4,
+            ]
+        )
+        self.observation_space = spaces.Box(-high, high)
+        self.loop = asyncio.get_event_loop()
 
-    async def reset(self):
+    def reset(self):
         self._state = self._initial_state
         print("Resetting")
 
-    async def step(self, actions):
-        state = await self._send(self._state, actions, self._channel)
+    def step(self, actions):
+        state = self.loop.run_until_complete(self._send(self._state, actions, self._channel))
         self._state = state.get("next_state")
         return [
             state.get("next_state"),

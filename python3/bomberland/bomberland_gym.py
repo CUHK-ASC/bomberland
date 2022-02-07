@@ -1,10 +1,10 @@
 import asyncio
 from typing import Callable, Dict, List
 
+import gym
+import numpy as np
 from bomberland.forward_model import ForwardModel
 from gym import spaces
-import numpy as np
-import gym
 
 # TODO: maybe bit encoding? like
 # bits   meaning
@@ -21,7 +21,7 @@ import gym
 #   File "/home/kftse/EfficientZero/config/atari/env_wrapper.py", line 36, in reset
 #     observation = observation.astype(np.uint8)
 
-initial_openai_state = np.zeros((6,6))
+initial_openai_state = np.zeros((6, 6))
 
 initial_server_state: Dict = {
     "game_id": "dev",
@@ -114,6 +114,7 @@ initial_server_state: Dict = {
     },
 }
 
+
 class GymEnv(gym.Env):
     def __init__(
         self,
@@ -147,7 +148,9 @@ class GymEnv(gym.Env):
         return self._state
 
     def step(self, actions):
-        state = self.loop.run_until_complete(self._send(self._state, actions, self._channel))
+        state = self.loop.run_until_complete(
+            self._send(self._state, actions, self._channel)
+        )
         self._state = state.get("next_state")
         return [
             state.get("next_state"),
@@ -182,7 +185,7 @@ class Gym:
         self._channel_buffer[channel] = state
 
     # TODO: should use valid openai_gym_state
-    def make(self, name: str, initial_state = initial_openai_state) -> GymEnv:
+    def make(self, name: str, initial_state=initial_openai_state) -> GymEnv:
         if self._environments.get(name) is not None:
             raise Exception(f'environment "{name}" has already been instantiated')
         self._environments[name] = GymEnv(

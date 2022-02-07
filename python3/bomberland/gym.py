@@ -1,12 +1,9 @@
 import asyncio
 from typing import Callable, Dict, List
 
-from bomberland.forward_model import ForwardModel
-
+import numpy as np
 from bomberland.forward_model import ForwardModel
 from gym import spaces
-import numpy as np
-import gym
 
 
 class GymEnv:
@@ -39,7 +36,9 @@ class GymEnv:
         print("Resetting")
 
     def step(self, actions):
-        state = self.loop.run_until_complete(self._send(self._state, actions, self._channel))
+        state = self.loop.run_until_complete(
+            self._send(self._state, actions, self._channel)
+        )
         self._state = state.get("next_state")
         return [
             state.get("next_state"),

@@ -108,7 +108,7 @@ def calculate_reward(state: Dict):
 def main():
     loop = asyncio.get_event_loop()
     gym = Gym(fwd_model_uri)
-    loop.run_until_complete( gym.connect())
+    loop.run_until_complete(gym.connect())
     env = gym.make("bomberland-open-ai-gym", mock_6x6_state)
     for i_ in range(1000):
         actions = []
@@ -118,7 +118,8 @@ def main():
         print(f"reward: {reward}, done: {done}, info: {info}")
         if done:
             env.reset()
-    loop.run_until_complete( gym.close())
+    loop.run_until_complete(gym.close())
+
 
 if __name__ == "__main__":
     main()

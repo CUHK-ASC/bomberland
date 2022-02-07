@@ -34,7 +34,7 @@ For development:
 
 2. Start bomberland server (without gym-dev)
 ```
-docker-compose -f open-ai-gym-dev.yml up --build -d
+docker-compose -f open-ai-gym-dev.yml up --build -d --force-recreate
 
 (ez) [kftse@ZBK-FN bomberland]$ docker container ls
 CONTAINER ID   IMAGE                                  COMMAND              CREATED          STATUS          PORTS                                       NAMES

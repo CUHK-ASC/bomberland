@@ -27,6 +27,12 @@ docker-compose up --abort-on-container-exit --force-recreate
 
 `docker-compose -f open-ai-gym-wrapper-compose.yml up --force-recreate --abort-on-container-exit`
 
+For development:
+
+`docker-compose -f open-ai-gym-dev.yml up --build -d`
+
+Then follow efficient zero repo to run main to connect
+
 # Starter kits
 
 | Kit                 | Link                                                                      | Description                                        | Up-to-date? | Contributed by                          |

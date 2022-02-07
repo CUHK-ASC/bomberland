@@ -1,4 +1,4 @@
-version: "3"
+version: "2"
 services:
     game-server:
         image: coderone.azurecr.io/game-server:1663

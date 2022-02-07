@@ -29,9 +29,19 @@ docker-compose up --abort-on-container-exit --force-recreate
 
 For development:
 
-`docker-compose -f open-ai-gym-dev.yml up --build -d`
+1. Install bomberland to your conda env
+`pip install -e python3`
 
-Then follow efficient zero repo to run main to connect
+2. Start bomberland server (without gym-dev)
+```
+docker-compose -f open-ai-gym-dev.yml up --build -d
+
+(ez) [kftse@ZBK-FN bomberland]$ docker container ls
+CONTAINER ID   IMAGE                                  COMMAND              CREATED          STATUS          PORTS                                       NAMES
+1dbebe754ab5   coderone.azurecr.io/game-server:1663   "/app/game-server"   32 seconds ago   Up 31 seconds   0.0.0.0:6969->6969/tcp, :::6969->6969/tcp   bomberland_fwd-server_1
+```
+
+3. follow efficient zero repo to run main to connect
 
 # Starter kits
 

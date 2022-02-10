@@ -2,26 +2,7 @@ import asyncio
 from typing import Callable, Dict, List
 
 import gym
-import numpy as np
 from bomberland.forward_model import ForwardModel
-from gym import spaces
-
-# TODO: maybe bit encoding? like
-# bits   meaning
-# 0-3    type of block (indestructable, destructable wall, empty, enemy, self, pickup boost1, pickup boost2, ...)
-# 4+     extra properties
-# 4      invulnerable
-# 5-7    hp
-# 8-10   inventory/bombs
-# 11-13  diameter
-# ...
-# Maybe 16 bit enough?
-
-# TODO: In Efficient Zero converted observation to 8bit
-#   File "/home/kftse/EfficientZero/config/atari/env_wrapper.py", line 36, in reset
-#     observation = observation.astype(np.uint8)
-
-initial_openai_state = np.zeros((6, 6))
 
 initial_server_state: Dict = {
     "game_id": "dev",
@@ -128,18 +109,6 @@ class GymEnv(gym.Env):
         self._fwd = fwd_model
         self._channel = channel
         self._send = send_next_state
-        # [noop, 4 directions, bomb, detonate]
-        self.action_space = spaces.Discrete(7)
-        # TODO fix observation_space here, should be (map_width)x(map_height)x(# type of block, e.g. wall, bomb, empty ,....)
-        high = np.array(
-            [
-                1,
-                2,
-                3,
-                4,
-            ]
-        )
-        self.observation_space = spaces.Box(-high, high)
         self.loop = asyncio.get_event_loop()
 
     def reset(self):
@@ -184,8 +153,7 @@ class Gym:
         self._channel_is_busy_status[channel] = False
         self._channel_buffer[channel] = state
 
-    # TODO: should use valid openai_gym_state
-    def make(self, name: str, initial_state=initial_openai_state) -> GymEnv:
+    def make(self, name: str, initial_state = initial_server_state) -> GymEnv:
         if self._environments.get(name) is not None:
             raise Exception(f'environment "{name}" has already been instantiated')
         self._environments[name] = GymEnv(
@@ -198,13 +166,11 @@ class Gym:
         return self._environments[name]
 
     async def _send_next_state(self, state, actions, channel: int):
-        # TODO: convert openai.gym.spaces state to server state
         self._channel_is_busy_status[channel] = True
         await self._client_fwd.send_next_state(channel, state, actions)
         while self._channel_is_busy_status[channel] == True:
             # TODO figure out why packets are not received without some sleep
             await asyncio.sleep(0.0001)
         result = self._channel_buffer[channel]
-        # TODO: convert server state to openai.gym.spaces state
         del self._channel_buffer[channel]
         return result

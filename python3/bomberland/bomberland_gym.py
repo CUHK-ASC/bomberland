@@ -153,7 +153,7 @@ class Gym:
         self._channel_is_busy_status[channel] = False
         self._channel_buffer[channel] = state
 
-    def make(self, name: str, initial_state = initial_server_state) -> GymEnv:
+    def make(self, name: str, initial_state=initial_server_state) -> GymEnv:
         if self._environments.get(name) is not None:
             raise Exception(f'environment "{name}" has already been instantiated')
         self._environments[name] = GymEnv(

@@ -1,9 +1,9 @@
 import asyncio
 import os
 import random
-import gym
-
 from typing import Union
+
+import gym
 from bomberland.game_state import GameState
 
 uri = (
@@ -12,6 +12,7 @@ uri = (
 )
 
 actions = ["up", "down", "left", "right", "bomb", "detonate"]
+
 
 class GymEnv(gym.Env):
     def __init__(
@@ -32,6 +33,8 @@ class GymEnv(gym.Env):
             state.get("is_complete"),
             state.get("tick_result").get("events"),
         ]
+
+
 class Agent:
     def __init__(self):
         self._client = GameState(uri)

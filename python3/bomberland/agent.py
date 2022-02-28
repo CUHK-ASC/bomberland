@@ -1,18 +1,37 @@
 import asyncio
 import os
 import random
-from typing import Union
+import gym
 
+from typing import Union
 from bomberland.game_state import GameState
 
 uri = (
     os.environ.get("GAME_CONNECTION_STRING")
-    or "ws://127.0.0.1:3000/?role=agent&agentId=agentId&name=defaultName"
+    or "ws://127.0.0.1:3000/?role=agent&agentId=agentA&name=defaultName"
 )
 
 actions = ["up", "down", "left", "right", "bomb", "detonate"]
 
+class GymEnv(gym.Env):
+    def __init__(
+        self,
+    ):
+        self.agent = Agent()
 
+    def reset(self):
+        return self._state
+
+    def step(self, actions):
+        state = self.loop.run_until_complete(
+            self._send(self._state, actions, self._channel)
+        )
+        self._state = state.get("next_state")
+        return [
+            state.get("next_state"),
+            state.get("is_complete"),
+            state.get("tick_result").get("events"),
+        ]
 class Agent:
     def __init__(self):
         self._client = GameState(uri)
